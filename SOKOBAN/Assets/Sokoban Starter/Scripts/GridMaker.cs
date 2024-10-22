@@ -20,7 +20,7 @@ public class GridMaker : MonoBehaviour
     private Vector2 _bottomRight;
     public Vector2 TopLeft { get { return _topLeft; } }
     public Vector2 BottomRight { get { return _bottomRight; } }
-
+    
     //Singleton reference that GridObjects use
     public static GridMaker reference;
 
