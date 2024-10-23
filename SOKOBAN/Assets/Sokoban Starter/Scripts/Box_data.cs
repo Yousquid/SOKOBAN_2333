@@ -8,6 +8,8 @@ public class Box_data : MonoBehaviour
     public Vector2Int box_position;
     public string boxtype;
     public GameObject gameObject;
+    public Vector2Int lastPullingDirection;
+    public bool has_moved;
 
     public Box_data(Vector2Int box_position, string boxtype, GameObject gameObject)
     {
@@ -24,6 +26,6 @@ public class Box_data : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        box_position = gridObject.gridPosition;
     }
 }

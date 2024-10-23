@@ -5,10 +5,10 @@ using UnityEngine;
 public class GameManager_New : MonoBehaviour
 {
     public GridMaker gridMaker;
-    public bool clingy_can_move_left = false;
+    public bool clingy_check = false;
     public bool clingy_left_go = false;
-    private Dictionary<Vector2Int, Box_data> boxDataDictionary = new Dictionary<Vector2Int, Box_data>();
-    private Dictionary<string,GameObject> box_object = new Dictionary<string,GameObject>();
+    public Dictionary<Vector2Int, Box_data> boxDataDictionary = new Dictionary<Vector2Int, Box_data>();
+    public Dictionary<string,GameObject> box_object = new Dictionary<string,GameObject>();
 
 
     void Start()
@@ -28,6 +28,11 @@ public class GameManager_New : MonoBehaviour
             {
                 box_object.Add("clingy", box);
             }
+            if (boxData.boxtype == "sticky")
+            {
+                box_object.Add("sticky", box);
+            }
+
 
             Vector2Int gridPos = boxData.gridObject.gridPosition;
 
@@ -65,24 +70,37 @@ public class GameManager_New : MonoBehaviour
 
                 return;
             }
+            //if (boxFront.boxtype == "clingy")
+            //{
+            //    // Check if we are moving away from the pull-only cube
+            //    if (CanPullBox(boxData_1, boxFront, AddedPosition))
+            //    {
+            //        PullBox(boxData_1, boxFront, AddedPosition); // Perform the pulling
+                   
+            //    }
+            //    return;
+            //}
 
             return;
         }
 
-        if (boxData_1.boxtype != "clingy")
-        {
+        //if (boxData_1.boxtype != "clingy")
+        //{
             MoveBox(CurrentPosition, boxData_1, NewPosition);
             if (Input.GetKeyDown(KeyCode.A))
             {
                 clingy_left_go = true;
             }
 
-        }
+       // }
 
     }
 
 
-    
+
+  
+
+
     public bool CanPushChain(Box_data boxFront, Vector2Int AddedPosition)
     {
         Vector2Int NewPosition = boxFront.gridObject.gridPosition + AddedPosition;
@@ -192,15 +210,207 @@ public class GameManager_New : MonoBehaviour
         }
     }
 
+    //public void PullCheck(GameObject box, Vector2Int PullingDirection)
+    //{
+    //    Box_data boxData_1 = box.GetComponent<Box_data>();
+    //    Vector2Int CurrentPosition = boxData_1.gridObject.gridPosition;
 
+    //    // Calculate the position where the pulling block will be after being pulled
+    //    Vector2Int PullingPosition = CurrentPosition + PullingDirection;
 
+    //    // Make sure the pull position is within bounds
+    //    if (PullingPosition.x < 1 || PullingPosition.x >= gridMaker.dimensions.x + 1 ||
+    //        PullingPosition.y < 1 || PullingPosition.y >= gridMaker.dimensions.y + 1)
+    //    {
+    //        return; // Invalid position, exit the method
+    //    }
 
-    // Update is called once per frame
+    //    // Check if there is a pulling block at the PullingPosition
+    //    Box_data pullingBlockData = null;
+    //    if (boxDataDictionary.ContainsKey(PullingPosition))
+    //    {
+    //        pullingBlockData = boxDataDictionary[PullingPosition];
+    //        boxData_1.lastPullingDirection = PullingDirection;
+    //    }
+
+    //    // Calculate the next position for the pulled block
+    //    Vector2Int PulledBlockNewPosition = CurrentPosition + PullingDirection;
+
+    //    // Ensure that the pulled block doesn't move out of bounds
+    //    if (PulledBlockNewPosition.x < 1 || PulledBlockNewPosition.x >= gridMaker.dimensions.x + 1 ||
+    //        PulledBlockNewPosition.y < 1 || PulledBlockNewPosition.y >= gridMaker.dimensions.y + 1)
+    //    {
+    //        return; // Invalid new position, exit the method
+    //    }
+
+    //    // Check if we can move the pulled block
+    //    if (pullingBlockData != null)
+    //    {
+    //        // Only move the pulled block if the pulling block is at the pulling position
+    //        if (pullingBlockData.gridObject.gridPosition == PullingPosition)
+    //        {
+    //            // Ensure the next position for the pulled block is free
+    //            if (!boxDataDictionary.ContainsKey(PulledBlockNewPosition))
+    //            {
+    //                // Move the pulled block to the new position
+    //                boxData_1.gridObject.gridPosition = PulledBlockNewPosition;
+
+    //                // Update the dictionary
+    //                boxDataDictionary.Remove(CurrentPosition);
+    //                boxDataDictionary[PulledBlockNewPosition] = boxData_1;
+
+    //                // Resetting this to allow future pulls
+    //                boxData_1.has_moved = false;
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        // If no pulling block, continue pulling in the last pulling direction
+    //        if (boxData_1.lastPullingDirection != Vector2Int.zero)
+    //        {
+    //            Vector2Int NewPosition = CurrentPosition + boxData_1.lastPullingDirection;
+
+    //            // Move the box only if the last pulling direction matches the current pulling direction
+    //            if (PullingDirection == boxData_1.lastPullingDirection)
+    //            {
+    //                // Ensure the next position for the pulled block is free
+    //                if (!boxDataDictionary.ContainsKey(NewPosition))
+    //                {
+    //                    boxData_1.gridObject.gridPosition = NewPosition;
+
+    //                    // Update the dictionary
+    //                    boxDataDictionary.Remove(CurrentPosition);
+    //                    boxDataDictionary[NewPosition] = boxData_1;
+
+    //                    // Resetting this to allow future pulls
+    //                    boxData_1.has_moved = false;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    print("Last: " + boxData_1.lastPullingDirection);
+    //    print("Current Pulling Direction: " + PullingDirection);
+    //}
+
+    //public void CanPull()
+    //{
+    //    if (box_object.ContainsKey("clingy"))
+    //    {
+    //        GameObject clingy = box_object["clingy"];
+
+    //        // Check for pulling in the desired direction based on player input
+    //        Vector2Int[] directions = new Vector2Int[]
+    //        {
+    //        new Vector2Int(1, 0),   
+    //        new Vector2Int(-1, 0),  
+    //        new Vector2Int(0, 1),   
+    //        new Vector2Int(0, -1)   
+    //        };
+
+            
+    //        foreach (var direction in directions)
+    //        {
+    //            PullCheck(clingy, direction);
+    //        }
+    //    }
+    //}
+
+    
     void Update()
     {
         PlayerInput();
 
-       
-
+        //CanPull();
     }
+
+
+    public void SomeSticky(GameObject box, Vector2Int PullingDirection)
+    {
+        Box_data boxData_1 = box.GetComponent<Box_data>();
+        Vector2Int CurrentPosition = boxData_1.gridObject.gridPosition;
+
+
+        // Calculate the position where the pulled block will be after being pulled
+        Vector2Int PullingPosition = CurrentPosition + PullingDirection;
+
+        // Make sure the pull position is within bounds
+        if (PullingPosition.x < 1 || PullingPosition.x >= gridMaker.dimensions.x + 1 ||
+            PullingPosition.y < 1 || PullingPosition.y >= gridMaker.dimensions.y + 1)
+        {
+            return;
+        }
+
+        // Check if there is a pulling block at the PullingPosition, but even if there isn't, we still handle the pulled block
+        Box_data pullingBlockData = null;
+        if (boxDataDictionary.ContainsKey(PullingPosition))
+        {
+            pullingBlockData = boxDataDictionary[PullingPosition];
+            clingy_check = true;
+
+            // If there's a pulling block, we update the last direction
+            boxData_1.lastPullingDirection = PullingDirection;
+        }
+
+        // Calculate the next position for the pulled block
+        Vector2Int PulledBlockNewPosition = CurrentPosition + PullingDirection;
+
+        // Ensure that the pulled block doesn't move out of bounds
+        if (PulledBlockNewPosition.x < 1 || PulledBlockNewPosition.x >= gridMaker.dimensions.x + 1 ||
+            PulledBlockNewPosition.y < 1 || PulledBlockNewPosition.y >= gridMaker.dimensions.y + 1)
+        {
+            return;
+        }
+
+        // Check if we can move the pulled block
+        if (pullingBlockData != null)
+        {
+            boxData_1.has_moved = false;
+            // If there's a pulling block, verify it's moving in the expected direction
+            Vector2Int PullingBlockExpectedPosition = PullingPosition + PullingDirection;
+
+            if (pullingBlockData.gridObject.gridPosition == PullingBlockExpectedPosition)
+            {
+
+                if (boxDataDictionary.ContainsKey(CurrentPosition))
+                {
+                    boxDataDictionary.Remove(CurrentPosition);
+                }
+
+                boxData_1.gridObject.gridPosition = PulledBlockNewPosition;
+
+                if (!boxDataDictionary.ContainsKey(PulledBlockNewPosition))
+                {
+                    boxDataDictionary.Add(PulledBlockNewPosition, boxData_1);
+                }
+            }
+        }
+        else
+        {
+            // If no pulling block, continue pulling in the last pulling direction
+            if (boxData_1.lastPullingDirection != Vector2Int.zero && !boxData_1.has_moved && boxData_1.lastPullingDirection == PullingDirection)
+            {
+                PullingDirection = boxData_1.lastPullingDirection;
+                Vector2Int NewPosition = CurrentPosition + PullingDirection;
+
+                if (!boxDataDictionary.ContainsKey(NewPosition) &&
+                    NewPosition.x >= 1 && NewPosition.x < gridMaker.dimensions.x + 1 &&
+                    NewPosition.y >= 1 && NewPosition.y < gridMaker.dimensions.y + 1)
+                {
+                    boxData_1.gridObject.gridPosition = NewPosition;
+
+                    if (boxDataDictionary.ContainsKey(CurrentPosition))
+                    {
+                        boxDataDictionary.Remove(CurrentPosition);
+                    }
+                    boxDataDictionary.Add(NewPosition, boxData_1);
+
+                    boxData_1.has_moved = true;
+                }
+            }
+        }
+    }
+
+
 }
