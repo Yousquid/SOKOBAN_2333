@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameManager_New : MonoBehaviour
 {
+    public GridMaker gridMaker;
     private Dictionary<Vector2Int, Box_data> boxDataDictionary = new Dictionary<Vector2Int, Box_data>();
     private Dictionary<string,GameObject> box_object = new Dictionary<string,GameObject>();
 
@@ -19,22 +20,6 @@ public class GameManager_New : MonoBehaviour
             if (boxData.boxtype == "player")
             {
                 box_object.Add("player", box);
-            }
-            if (boxData.boxtype == "wall")
-            {
-                box_object.Add("wall", box);
-            }
-            if (boxData.boxtype == "clingy")
-            {
-                box_object.Add("clingy", box);
-            }
-            if (boxData.boxtype == "sticky")
-            {
-                box_object.Add("sticky", box);
-            }
-            if (boxData.boxtype == "slick")
-            {
-                box_object.Add("slick", box);
             }
 
             Vector2Int gridPos = boxData.gridObject.gridPosition;
@@ -53,25 +38,130 @@ public class GameManager_New : MonoBehaviour
 
         Vector2Int CurrentPosition = boxData_1.gridObject.gridPosition;
 
+        Vector2Int NewPosition = CurrentPosition + AddedPosition;
+
+        if (NewPosition.x < 1 || NewPosition.x >= gridMaker.dimensions.x +1 || NewPosition.y < 1 || NewPosition.y >= gridMaker.dimensions.y +1)
+        {
+            return;
+        }
+
+        if (boxDataDictionary.ContainsKey(NewPosition))
+        {
+            Box_data boxFront = boxDataDictionary[NewPosition];
+
+            if (boxFront.boxtype == "slick")
+            {
+                if (CanPushChain(boxFront, AddedPosition))
+                {
+                    MovePushChain(boxFront, AddedPosition);
+
+                    MoveBox(CurrentPosition, boxData_1, NewPosition);
+                }
+
+                return;
+            }
+
+
+            return;
+        }
+        else MoveBox(CurrentPosition, boxData_1, NewPosition);
+
+    }
+
+    public bool CanPushChain(Box_data boxFront, Vector2Int AddedPosition)
+    {
+        Vector2Int NewPosition = boxFront.gridObject.gridPosition + AddedPosition;
+
+        if (NewPosition.x < 1 || NewPosition.x >= gridMaker.dimensions.x + 1 || NewPosition.y < 1 || NewPosition.y >= gridMaker.dimensions.y + 1)
+        {
+            return false; 
+        }
+
+        if (boxDataDictionary.ContainsKey(NewPosition))
+        {
+            Box_data nextBox = boxDataDictionary[NewPosition];
+
+            if (nextBox.boxtype == "slick")
+            {
+                return CanPushChain(nextBox, AddedPosition); 
+            }
+            else
+            {
+                return false; 
+            }
+        }
+
+        return true;
+    }
+
+    public void MoveBox(Vector2Int CurrentPosition, Box_data boxData_1, Vector2Int NewPosition)
+    {
         if (boxDataDictionary.ContainsKey(CurrentPosition))
         {
             boxDataDictionary.Remove(CurrentPosition);
         }
 
-        boxData_1.gridObject.gridPosition += AddedPosition;
-
-        Vector2Int NewPosition = boxData_1.box_position = boxData_1.gridObject.gridPosition + AddedPosition;
+        boxData_1.gridObject.gridPosition = NewPosition;
 
         if (!boxDataDictionary.ContainsKey(NewPosition))
         {
             boxDataDictionary.Add(NewPosition, boxData_1);
         }
+    }
 
+    public void MovePushChain(Box_data box, Vector2Int AddedPosition)
+    {
+        Vector2Int CurrentPosition = box.gridObject.gridPosition;
+
+        Vector2Int NewPosition = CurrentPosition + AddedPosition;
+
+        if (boxDataDictionary.ContainsKey(NewPosition))
+        {
+            Box_data nextBox = boxDataDictionary[NewPosition];
+
+            MovePushChain(nextBox, AddedPosition); 
+        }
+
+        MoveBox(CurrentPosition,box, NewPosition);
     }
 
 
-    // Update is called once per frame
-    void Update()
+
+    public void PushBoxCheck(Box_data boxFront, Box_data boxData_1, Vector2Int FrontPosition, Vector2Int AddedPosition, Vector2Int CurrentPosition, Vector2Int NewPosition)
+    {
+        if (boxFront.boxtype == "slick")
+        {
+           
+            Vector2Int PushToPosition = FrontPosition + AddedPosition;
+
+            if (PushToPosition.x < 1 || PushToPosition.x >= gridMaker.dimensions.x + 1 || PushToPosition.y < 1 || PushToPosition.y >= gridMaker.dimensions.y + 1)
+            {
+                return;
+            }
+
+            if (boxDataDictionary.ContainsKey(CurrentPosition) && boxDataDictionary.ContainsKey(NewPosition))
+            {
+                boxDataDictionary.Remove(CurrentPosition);
+                boxDataDictionary.Remove(NewPosition);
+            }
+
+            boxData_1.gridObject.gridPosition += AddedPosition;
+            boxFront.gridObject.gridPosition += AddedPosition;
+
+            if (!boxDataDictionary.ContainsKey(NewPosition))
+            {
+                boxDataDictionary.Add(FrontPosition, boxData_1);
+                boxDataDictionary.Add(PushToPosition, boxFront);
+            }
+
+            return;
+
+        }
+    }
+
+
+
+    public void MovePlayer()
     {
         if (Input.GetKeyDown(KeyCode.D))
         {
@@ -109,6 +199,14 @@ public class GameManager_New : MonoBehaviour
                 UpdateBoxPosition(player_object, new Vector2Int(0, -1));
             }
         }
+    }
+
+
+
+    // Update is called once per frame
+    void Update()
+    {
+        MovePlayer();
 
 
     }
