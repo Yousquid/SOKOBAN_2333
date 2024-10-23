@@ -10,6 +10,8 @@ public class Box_data : MonoBehaviour
     public GameObject gameObject;
     public Vector2Int lastPullingDirection;
     public bool has_moved;
+    public bool isMoving;
+    public Vector2Int movementDirection;
 
     public Box_data(Vector2Int box_position, string boxtype, GameObject gameObject)
     {

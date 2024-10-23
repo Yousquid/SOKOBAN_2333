@@ -66,6 +66,27 @@ public class GameManager_New : MonoBehaviour
                     MovePushChain(boxFront, AddedPosition);
 
                     MoveBox(CurrentPosition, boxData_1, NewPosition);
+
+                    boxFront.isMoving = true;
+                    boxData_1.isMoving = true;
+
+                    if (Input.GetKeyDown(KeyCode.D))
+                    {
+                        boxFront.movementDirection = new Vector2Int(1, 0);
+                    }
+                    if (Input.GetKeyDown(KeyCode.A))
+                    {
+                        boxFront.movementDirection = new Vector2Int(-1, 0);
+                    }
+                    if (Input.GetKeyDown(KeyCode.S))
+                    {
+                        boxFront.movementDirection = new Vector2Int(0, -1);
+                    }
+                    if (Input.GetKeyDown(KeyCode.W))
+                    {
+                        boxFront.movementDirection = new Vector2Int(0, 1);
+                    }
+
                 }
 
                 return;
@@ -87,12 +108,26 @@ public class GameManager_New : MonoBehaviour
         //if (boxData_1.boxtype != "clingy")
         //{
             MoveBox(CurrentPosition, boxData_1, NewPosition);
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                clingy_left_go = true;
-            }
+        
+        boxData_1.isMoving = true;
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            boxData_1.movementDirection = new Vector2Int(1, 0);
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            boxData_1.movementDirection = new Vector2Int(-1, 0);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            boxData_1.movementDirection = new Vector2Int(0, -1);
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            boxData_1.movementDirection = new Vector2Int(0, 1);
+        }
 
-       // }
+        // }
 
     }
 
