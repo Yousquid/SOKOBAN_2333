@@ -7,6 +7,7 @@ public class Clingy : MonoBehaviour
     public GameManager_New gameManager_New;
     public int lrud;
     public bool pull = false;
+    public float timer = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +17,7 @@ public class Clingy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         PullBlcok();
     }
    
@@ -53,6 +55,12 @@ public class Clingy : MonoBehaviour
             if (Clingy_Yposition == Player_Yposition && Clingy_Xposition - Player_Xposition == 1)
             {
                 pull = true;
+                timer = 0;
+            }
+            else { timer++; }
+            if (timer >= 10)
+            {
+                pull = false;
             }
             if (pull && Clingy_Xposition - Player_Xposition == 2)
             {
