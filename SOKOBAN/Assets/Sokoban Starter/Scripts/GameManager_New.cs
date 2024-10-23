@@ -5,6 +5,8 @@ using UnityEngine;
 public class GameManager_New : MonoBehaviour
 {
     public GridMaker gridMaker;
+    public bool clingy_can_move_left = false;
+    public bool clingy_left_go = false;
     private Dictionary<Vector2Int, Box_data> boxDataDictionary = new Dictionary<Vector2Int, Box_data>();
     private Dictionary<string,GameObject> box_object = new Dictionary<string,GameObject>();
 
@@ -22,18 +24,21 @@ public class GameManager_New : MonoBehaviour
                 box_object.Add("player", box);
             }
 
+            if (boxData.boxtype == "clingy")
+            {
+                box_object.Add("clingy", box);
+            }
+
             Vector2Int gridPos = boxData.gridObject.gridPosition;
 
             boxDataDictionary.Add(gridPos, boxData);
         }
 
-        
-        
-
     }
 
     public void UpdateBoxPosition(GameObject box, Vector2Int AddedPosition)
     {
+        
         Box_data boxData_1 = box.GetComponent<Box_data>();
 
         Vector2Int CurrentPosition = boxData_1.gridObject.gridPosition;
@@ -61,13 +66,23 @@ public class GameManager_New : MonoBehaviour
                 return;
             }
 
-
             return;
         }
-        else MoveBox(CurrentPosition, boxData_1, NewPosition);
+
+        if (boxData_1.boxtype != "clingy")
+        {
+            MoveBox(CurrentPosition, boxData_1, NewPosition);
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                clingy_left_go = true;
+            }
+
+        }
 
     }
 
+
+    
     public bool CanPushChain(Box_data boxFront, Vector2Int AddedPosition)
     {
         Vector2Int NewPosition = boxFront.gridObject.gridPosition + AddedPosition;
@@ -127,41 +142,8 @@ public class GameManager_New : MonoBehaviour
 
 
 
-    public void PushBoxCheck(Box_data boxFront, Box_data boxData_1, Vector2Int FrontPosition, Vector2Int AddedPosition, Vector2Int CurrentPosition, Vector2Int NewPosition)
-    {
-        if (boxFront.boxtype == "slick")
-        {
-           
-            Vector2Int PushToPosition = FrontPosition + AddedPosition;
 
-            if (PushToPosition.x < 1 || PushToPosition.x >= gridMaker.dimensions.x + 1 || PushToPosition.y < 1 || PushToPosition.y >= gridMaker.dimensions.y + 1)
-            {
-                return;
-            }
-
-            if (boxDataDictionary.ContainsKey(CurrentPosition) && boxDataDictionary.ContainsKey(NewPosition))
-            {
-                boxDataDictionary.Remove(CurrentPosition);
-                boxDataDictionary.Remove(NewPosition);
-            }
-
-            boxData_1.gridObject.gridPosition += AddedPosition;
-            boxFront.gridObject.gridPosition += AddedPosition;
-
-            if (!boxDataDictionary.ContainsKey(NewPosition))
-            {
-                boxDataDictionary.Add(FrontPosition, boxData_1);
-                boxDataDictionary.Add(PushToPosition, boxFront);
-            }
-
-            return;
-
-        }
-    }
-
-
-
-    public void MovePlayer()
+    public void PlayerInput()
     {
         if (Input.GetKeyDown(KeyCode.D))
         {
@@ -170,6 +152,9 @@ public class GameManager_New : MonoBehaviour
                 GameObject player_object = box_object["player"];
 
                 UpdateBoxPosition(player_object, new Vector2Int(1, 0));
+
+                
+                
             }
         }
         if (Input.GetKeyDown(KeyCode.A))
@@ -179,6 +164,8 @@ public class GameManager_New : MonoBehaviour
                 GameObject player_object = box_object["player"];
 
                 UpdateBoxPosition(player_object, new Vector2Int(-1, 0));
+
+               
             }
         }
         if (Input.GetKeyDown(KeyCode.S))
@@ -188,6 +175,8 @@ public class GameManager_New : MonoBehaviour
                 GameObject player_object = box_object["player"];
 
                 UpdateBoxPosition(player_object, new Vector2Int(0, 1));
+
+                
             }
         }
         if (Input.GetKeyDown(KeyCode.W))
@@ -197,17 +186,21 @@ public class GameManager_New : MonoBehaviour
                 GameObject player_object = box_object["player"];
 
                 UpdateBoxPosition(player_object, new Vector2Int(0, -1));
+
+               
             }
         }
     }
 
 
 
+
     // Update is called once per frame
     void Update()
     {
-        MovePlayer();
+        PlayerInput();
 
+       
 
     }
 }
